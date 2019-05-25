@@ -9,8 +9,8 @@ EfficientNets is a family of SOTA classification models based on AutoML and Comp
 
 EfficientNets achieve state-of-the-art accuracy on ImageNet with an order of magnitude better efficiency:
 
-![Parameters](g3doc/params.png){width="406"}
-![Flops](g3doc/flops.png){width="400"}
+![Parameters](g3doc/params.png){width="300"}
+![Flops](g3doc/flops.png){width="300"}
 
 * In high-accuracy regime, our EfficientNet-B7 achieves state-of-the-art 84.4% top-1 / 97.1% top-5 accuracy on ImageNet, while being 8.4x smaller and 6.1x faster on CPU inference than previous best [Gpipe](https://arxiv.org/abs/1811.06965)
 
@@ -21,6 +21,9 @@ EfficientNets achieve state-of-the-art accuracy on ImageNet with an order of mag
 ## 2. Using Pretrained EfficientNet Checkpoints
 
 We have provided a list of EfficientNet checkpoints.  Please refer to this colab on how to obtain and use those checkpoints.
+
+[`eval_ckpt_example.ipynb`](eval_ckpt_example.ipynb): A colab example to load
+ EfficientNet pretrained checkpoints files and use the restored model to classify images.
 
 
 ## 3. Training EfficientNets on TPUs.
@@ -42,4 +45,4 @@ Then train the model:
     # DATA_DIR is a GCS location to which both the GCE VM and associated Cloud TPU have read access.
 
 
-For more instructions, please refer to our tutorial: https://cloud.google.com/tpu/docs/tutorials/mnasnet
+For more instructions, please refer to our tutorial: https://cloud.google.com/tpu/docs/tutorials/efficientnet
