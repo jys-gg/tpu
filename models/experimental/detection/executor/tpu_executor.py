@@ -17,10 +17,53 @@
 import collections
 import os
 
+import functools
+import json
+import time
+
 import numpy as np
 import tensorflow as tf
 
 from evaluation import factory
+
+def wait_for_tpu_cluster_resolver_ready():
+  """Returns `TPUClusterResolver` instance.
+
+  Returns:
+    A TPUClusterResolver if there is TPU machine (in TPU_CONFIG). Otherwise,
+    return None.
+  """
+  tf.logging.info('Waiting for wait_for_tpu_cluster_resolver_ready')
+  tpu_config_env = os.environ.get('TPU_CONFIG')
+  if not tpu_config_env:
+    tf.logging.info('Missing TPU_CONFIG, use CPU/GPU for training.')
+    return None
+  tpu_node = json.loads(tpu_config_env)
+
+  num_retries = _TPU_RESOLVER_RETRY
+  tf.logging.info('tpu_node config:\n %s', tpu_node)
+  for i in range(num_retries):
+    try:
+      tpu_cluster_resolver = (
+          tf.contrib.cluster_resolver.TPUClusterResolver(
+              tpu=[tpu_node['tpu_node_name']],
+              zone=tpu_node['zone'],
+              project=tpu_node['project'],
+              job_name='worker'))
+      tpu_cluster_resolver_dict = tpu_cluster_resolver.cluster_spec().as_dict()
+      if 'worker' in tpu_cluster_resolver_dict:
+        tf.logging.info('Found TPU worker: %s', tpu_cluster_resolver_dict)
+        return tpu_cluster_resolver
+    except Exception as e:  # pylint: disable=broad-except
+      if i < num_retries - 1:
+        tf.logging.info('Still waiting for provisioning of TPU VM instance.')
+      else:
+        # Preserves the traceback.
+        tf.logging.info(
+            'Failed for wait_for_tpu_cluster_resolver_ready after retry %s',
+            num_retries)
+        raise e
+    time.sleep(10)
 
 
 def write_summary(logs, summary_writer, current_step):
@@ -41,10 +84,8 @@ class TpuExecutor(object):
     self._evaluator = factory.evaluator_generator(params.eval)
 
     if params.use_tpu:
-      tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(
-          params.platform.tpu,
-          zone=params.platform.tpu_zone,
-          project=params.platform.gcp_project)
+      tpu_cluster_resolver = wait_for_tpu_cluster_resolver_ready()
+      tf.logging.info('Successfully created tpu_cluster_resolver')
       tpu_grpc_url = tpu_cluster_resolver.get_master()
       tf.Session.reset(tpu_grpc_url)
     else:
