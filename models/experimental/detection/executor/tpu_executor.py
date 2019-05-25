@@ -26,6 +26,8 @@ import tensorflow as tf
 
 from evaluation import factory
 
+_TPU_RESOLVER_RETRY = 40
+
 def wait_for_tpu_cluster_resolver_ready():
   """Returns `TPUClusterResolver` instance.
 
