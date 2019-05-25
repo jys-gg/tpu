@@ -35,7 +35,7 @@ RETINANET_CFG = {
             'learning_rate_steps': [15000, 20000],
         },
         'checkpoint': {
-            'path': '',
+            'path': None,
             'prefix': '',
         },
         'variable_filter': 'resnet50_conv2',
@@ -46,9 +46,9 @@ RETINANET_CFG = {
         'eval_samples': 5000,
         'min_eval_interval': 180,
         'eval_timeout': None,
-        'num_steps_per_eval': 1000,
+        'num_steps_per_eval': 200,
         'type': 'box',
-        'val_json_file': '',
+        'val_json_file': None,
         'eval_file_pattern': '',
     },
     'predict': {
