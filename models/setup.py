@@ -18,6 +18,6 @@ from setuptools import find_packages
 from setuptools import setup
 
 setup(
-    name='cloud_tpu_samples',
+    name='cloud_tpu_samples_jys',
     packages=find_packages()
 )
